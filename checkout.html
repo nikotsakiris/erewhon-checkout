@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout</title>
+
+  <style>
+    /* ======= Sharp Sans: load local font files =======
+       Put the .otf files next to this HTML file (or adjust paths).
+       Book = 400, Medium = 500, Semibold = 600, Bold = 700
+    */
+    @font-face {
+      font-family: "Sharp Sans";
+      src: url("SharpSans-Book.otf") format("opentype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Sharp Sans";
+      src: url("SharpSans-Medium.otf") format("opentype");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Sharp Sans";
+      src: url("SharpSans-Semibold.otf") format("opentype");
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Sharp Sans";
+      src: url("SharpSans-Bold.otf") format("opentype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ======= Tokens ======= */
+    :root {
+      --color_cream_one: #fdfdfc;
+      --color_cream_two: #f2f1ef;
+      --color_taupe_one: #9d9894;
+      --color_brown_two: #686460;
+      --color_dark_brown: #1b1a19;
+      --color_white: #fdfdfc;
+      --color_black: #1b1a19;
+
+      --max-width: 980px;
+
+      --bg: var(--color_white);
+      --text: var(--color_black);
+      --muted: var(--color_taupe_one);
+
+      --line: #ece7e2;
+      --line-strong: #ded6cf;
+      --chip: var(--color_cream_two);
+
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 14px;
+    }
+
+    /* Reset */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    html { color-scheme: light; }
+
+    body{
+      font-family: "Sharp Sans", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing: -0.01em;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-thumb {
+      background-color: #888 !important;
+      border-radius: 10px !important;
+    }
+    ::-webkit-scrollbar-track {
+      background-color: var(--color_white) !important;
+    }
+
+    /* ======= Top bar ======= */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      height: 64px;
+      background: linear-gradient(#222, #1b1a19);
+      color: var(--color_white);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0 18px;
+    }
+
+    .topbar .inner{
+      width: min(var(--max-width), 100%);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position: relative;
+    }
+
+    .icon-btn{
+      width: 38px;
+      height: 38px;
+      border: 0;
+      background: transparent;
+      color: var(--color_white);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      opacity: .9;
+      transition: background .15s ease, opacity .15s ease;
+    }
+    .icon-btn:hover{
+      background: rgba(255,255,255,.08);
+      opacity: 1;
+    }
+
+    .right-icons{
+      display:flex;
+      align-items:center;
+      gap: 2px;
+    }
+
+    .logo-wrap{
+      position:absolute;
+      left:50%;
+      transform: translateX(-50%);
+      display:flex;
+      align-items:center;
+      height: 64px;
+      pointer-events: none;
+    }
+    .logo{
+      height: 22px;
+      width: auto;
+      display: block;
+      object-fit: contain;
+      pointer-events: auto;
+    }
+
+    /* ======= Page container ======= */
+    .wrap{
+      width: min(var(--max-width), 100%);
+      margin: 0 auto;
+      padding: 26px 18px 80px;
+    }
+
+    .crumb-row{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      margin: 10px 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .back{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      display:grid;
+      place-items:center;
+      opacity: .8;
+      cursor: pointer;
+    }
+    .back:hover{ background: rgba(0,0,0,.03); }
+
+    .crumb{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      color: var(--muted);
+    }
+    .crumb a{
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .crumb a:hover{ text-decoration: underline; }
+
+    .top-divider{
+      border-top: 1px solid var(--line);
+      margin: 10px 0 18px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap: 28px;
+      align-items:start;
+    }
+
+    h1{
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 12px;
+    }
+
+    .card{
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--color_white);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .notice{
+      display:grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--chip);
+      border: 1px solid rgba(0,0,0,.04);
+    }
+
+    .notice .title{
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: .02em;
+    }
+
+    .notice .body{
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--color_dark_brown);
+      font-weight: 500;
+    }
+
+    .details{
+      margin-top: 12px;
+      display:grid;
+      gap: 10px;
+    }
+
+    .row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .row:last-child{ border-bottom: 0; }
+
+    .label{
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--muted);
+      font-weight: 600;
+      margin-top: 2px;
+      min-width: 84px;
+    }
+
+    .value{
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    /* Right column */
+    .right{
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+
+    .membership-image {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .membership-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .summary{
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--color_white);
+      padding: 14px 14px 16px;
+    }
+    .summary-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .summary-actions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn{
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--line-strong);
+      background: var(--color_white);
+      cursor:pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .btn:hover{ background: rgba(0,0,0,.03); }
+
+    .btn.primary{
+      border-color: var(--color_black);
+      background: var(--color_black);
+      color: var(--color_white);
+    }
+    .btn.primary:hover{ filter: brightness(0.96); }
+
+    .fineprint{
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--color_brown_two);
+      font-weight: 500;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .right{ position:static; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="inner">
+      <button class="icon-btn" aria-label="Menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <div class="logo-wrap">
+        <img alt="Logo" src="logo.svg" class="logo">
+      </div>
+
+      <div class="right-icons">
+        <button class="icon-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+          </svg>
+        </button>
+
+        <button class="icon-btn" aria-label="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+
+        <button class="icon-btn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6h15l-2 9H8L6 6Z"></path>
+            <path d="M6 6l-2-2"></path>
+            <circle cx="9" cy="20" r="1.6"></circle>
+            <circle cx="18" cy="20" r="1.6"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="crumb-row">
+      <div class="back" onclick="history.back()" aria-label="Back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </div>
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="#">Home</a>
+        <span>/</span>
+        <span>Checkout</span>
+      </nav>
+    </div>
+
+    <div class="top-divider"></div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section>
+        <h1>Checkout</h1>
+
+        <div class="card">
+          <div class="section-head">
+            <span>Online Checkout</span>
+            <span style="color: var(--muted); font-weight: 600; letter-spacing: .08em;">Unavailable</span>
+          </div>
+
+          <div class="notice" role="status" aria-live="polite">
+            <div class="title">I’m sorry 💛</div>
+            <div class="body">
+              We do not accept online checkouts.
+              <br />
+              You have to check out in person at <strong>Rowes Wharf Sea Grille</strong> at <strong>9:15pm</strong>
+              to have dinner with <strong>Niko Tsakiris</strong>.
+            </div>
+          </div>
+
+          <div class="details" aria-label="Checkout details">
+            <div class="row">
+              <div class="label">Location</div>
+              <div class="value">70 Rowes Wharf, Boston, MA 02110</div>
+            </div>
+            <div class="row">
+              <div class="label">Time</div>
+              <div class="value">9:15pm</div>
+            </div>
+            <div class="row">
+              <div class="label">Reservation</div>
+              <div class="value">Dinner with Niko Tsakiris</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="right">
+        <div class="membership-image">
+          <img src="membership.png" alt="Membership promotion">
+        </div>
+
+        <div class="summary">
+          <div class="summary-row">
+            <span>Total Due Online:</span>
+            <span>$0.00</span>
+          </div>
+          <div class="summary-actions">
+            <button class="btn" type="button" onclick="window.location.href='index.html'">Back to Cart</button>
+            <button class="btn primary" type="button"
+              onclick="window.open('https://maps.app.goo.gl/7gSkBantHKBxH2Vk7')">
+              Get Directions
+            </button>
+          </div>
+          <div class="fineprint">
+            This “checkout” is only valid in person. Bring yourself (and your smile).
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
